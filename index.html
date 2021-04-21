@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Meme Templates</title>
+    <style media="screen">
+      body {
+        text-align: center;
+      }
+
+      img {
+        display: none;
+        margin: 10px auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Meme Templates</h1>
+    <img id="cow" src="templates/cow.jpeg">
+    <img id="template" src="templates/theSame.jpeg">
+    <canvas id="canvas" width="1000" height="1000"></canvas>
+    <script type="text/javascript">
+      window.onload = function() {
+        var ctx = canvas.getContext("2d");
+        var img = document.getElementById("template");
+        var cowImg = document.getElementById("cow");
+        ctx.drawImage(img, 0, 0, img.width,    img.height,     // source rectangle
+                           0, 0, canvas.width, canvas.height); // destination rectangle
+
+        ctx.transform(1, .1, -.61, 1, 149, 33);
+        // ctx.transform(1, .2, -.8, 1, 149, 30);
+        ctx.drawImage(cowImg, 0, 0, img.width,    img.height,     // source rectangle
+                              0, 0, 379, 300); // destination rectangle
+        ctx.transform(1, 0.1, 0.1, 1, 473, 0);
+        ctx.drawImage(cowImg, 0, 0, img.width,    img.height,     // source rectangle
+                              0, 0, 441, 300); // destination rectangle
+
+      };
+    </script>
+  </body>
+</html>
