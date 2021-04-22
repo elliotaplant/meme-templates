@@ -10,7 +10,7 @@ ImgWarper.PointDefiner = function(canvas, image, imgData, template) {
   this.computing_ = false;
   $(c).unbind();
   $(c).bind('mousedown', function (e) { that.touchStart(e); });
-  $(c).bind('mousemove', function (e) { that.touchDrag(e); });
+  $(c).bind('mousemove', this.throttle(100, function (e) { that.touchDrag(e); }));
   $(c).bind('mouseup', function (e) { that.touchEnd(e); });
   this.currentPointIndex = -1;
   this.imgWarper = new ImgWarper.Warper(c, image, imgData, template);
@@ -42,6 +42,7 @@ ImgWarper.PointDefiner.prototype.redraw = function () {
     return;
   }
   this.imgWarper.warp(this.oriPoints, this.dstPoints);
+  this.showTransformation(this.oriPoints, this.dstPoints);
   if (document.getElementById('show-control').checked) {
     this.redrawCanvas();
   }
@@ -118,4 +119,23 @@ ImgWarper.PointDefiner.prototype.drawOnePoint = function(point, ctx, color) {
   ctx.arc(parseInt(point.x), parseInt(point.y), 3, 0, 2 * Math.PI, false);
   ctx.fillStyle = color;
   ctx.fill();
+};
+
+ImgWarper.PointDefiner.prototype.showTransformation = function(oriPoints, dstPoints) {
+  window.transformationList.innerHTML = oriPoints.map((ori, i) => ({ ori, dst: dstPoints[i] }))
+    .map(({ ori, dst }) => `<li>(${ori.x}, ${ori.y}) => (${dst.x}, ${dst.y})</li>`)
+    .join('\n');
+};
+
+ImgWarper.PointDefiner.prototype.throttle = function(limit, func) {
+  let inThrottle;
+  return function() {
+    const args = arguments;
+    const context = this;
+    if (!inThrottle) {
+      func.apply(context, args);
+      inThrottle = true;
+      setTimeout(() => inThrottle = false, limit);
+    }
+  };
 };

@@ -16,7 +16,6 @@ ImgWarper.Warper = function(canvas, img, imgData, template) {
   this.ctx.setTransform(1, 0, 0, 1, 0, 0);
   this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
   this.ctx.putImageData(imgData, 0, 0);
-  console.log('drawn');
 
   this.grid = [];
   for (let i = 0; i < this.width; i += this.gridSize) {
