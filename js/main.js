@@ -38,7 +38,6 @@ $(document).ready(function(){
         return;
       }
       reader.onload = function (event) {
-        console.log(event.target);
         const img = render(event.target.result, function (imageData, template) {
           warper = new ImgWarper.PointDefiner(canvas, img, imageData, template);
         });

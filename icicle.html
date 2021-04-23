@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Image Warp - JS</title>
+  <style>
+    #template, #dropped {
+      /* display: none; */
+    }
+
+    #combined {
+      border: 2px dashed beige;
+    }
+
+  </style>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
+  </script>
+  <script type="text/javascript" src="./js/point.js"></script>
+  <script type="text/javascript" src="./js/matrix22.js"></script>
+  <script type="text/javascript" src="./js/deformation.js"></script>
+  <script type="text/javascript" src="./js/interpolation.js"></script>
+  <script type="text/javascript" src="./js/point_definer.js"></script>
+  <script type="text/javascript" src="./js/icicle.js"></script>
+
+<body>
+  <img id="dropped" src="images/cow.jpeg">
+  <img id="template" src="templates/theSame.jpeg">
+
+  <canvas id="combined" width="500" height="500"></canvas>
+  <canvas id="myCanvas"></canvas>
+  <canvas id="templateCanvas"></canvas>
+</body>
+
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>image on canvas</title>
+    <style media="screen">
+      img {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <img id="template" src="templates/theSame.jpeg">
+    <canvas id="canvas" width="300" height="300"></canvas>
+    <script type="text/javascript">
+      window.onload = function() {
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(template, 0, 0, template.width,    template.height,     // source rectangle
+                           0, 0, canvas.width, canvas.height); // destination rectangle
+      };
+    </script>
+  </body>
+</html>

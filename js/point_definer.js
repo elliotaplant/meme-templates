@@ -1,6 +1,6 @@
-ImgWarper.PointDefiner = function(canvas, image, imgData, template) {
-  this.oriPoints = new Array();
-  this.dstPoints = new Array();
+ImgWarper.PointDefiner = function(canvas, image, imgData, template, oriPoints = [], dstPoints = []) {
+  this.oriPoints = oriPoints;
+  this.dstPoints = dstPoints;
 
   //set up points for change;
   const c = canvas;
@@ -35,15 +35,16 @@ ImgWarper.PointDefiner.prototype.touchDrag = function(e) {
 };
 
 ImgWarper.PointDefiner.prototype.redraw = function () {
+  const showControl = document.getElementById('show-control');
   if (this.oriPoints.length < 3) {
-    if (document.getElementById('show-control').checked) {
+    if (!showControl || showControl.checked) {
       this.redrawCanvas();
     }
     return;
   }
   this.imgWarper.warp(this.oriPoints, this.dstPoints);
   this.showTransformation(this.oriPoints, this.dstPoints);
-  if (document.getElementById('show-control').checked) {
+  if (!showControl || showControl.checked) {
     this.redrawCanvas();
   }
 };
@@ -122,9 +123,11 @@ ImgWarper.PointDefiner.prototype.drawOnePoint = function(point, ctx, color) {
 };
 
 ImgWarper.PointDefiner.prototype.showTransformation = function(oriPoints, dstPoints) {
-  window.transformationList.innerHTML = oriPoints.map((ori, i) => ({ ori, dst: dstPoints[i] }))
-    .map(({ ori, dst }) => `<li>(${ori.x}, ${ori.y}) => (${dst.x}, ${dst.y})</li>`)
-    .join('\n');
+  if (window.transformationList) {
+    window.transformationList.innerHTML = oriPoints.map((ori, i) => ({ ori, dst: dstPoints[i] }))
+      .map(({ ori, dst }) => `<li>(${ori.x}, ${ori.y}) => (${dst.x}, ${dst.y})</li>`)
+      .join('\n');
+  }
 };
 
 ImgWarper.PointDefiner.prototype.throttle = function(limit, func) {
