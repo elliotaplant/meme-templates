@@ -22,41 +22,67 @@
     <script src="classes/BilinearInterpolation.js" charset="utf-8"></script>
     <script src="classes/Warper.js" charset="utf-8"></script>
     <script src="classes/Combiner.js" charset="utf-8"></script>
+    <script src="classes/Insertion.js" charset="utf-8"></script>
     <script type="text/javascript">
       window.onload = function() {
-        const hiddenCtx = hiddenCanvas.getContext("2d");
-        hiddenCtx.drawImage(ogImage, 0, 0, ogImage.width, ogImage.height, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
-        const hiddenCanvasImgData = hiddenCtx.getImageData(0, 0, ogImage.width, ogImage.height)
+        const addedImgData = getImgData(ogImage, hiddenCanvas);
+        const templateCanvasImgData = getImgData(templateImg, templateCanvas);
 
-        const templateCtx = templateCanvas.getContext("2d");
-        templateCtx.drawImage(templateImg, 0, 0, templateImg.width, templateImg.height, 0, 0, templateCanvas.width, templateCanvas.height);
-        const templateCanvasImgData = templateCtx.getImageData(0, 0, templateImg.width, templateImg.height)
+        const insertion1 = new Insertion(
+          addedImgData,
+          ogImage,
+          [
+            [3, 4], [497, 4], [5, 496], [495, 495], [493, 26], [488, 136], [485, 282], [494, 436], [409, 489],
+            [284, 490], [168, 490], [68, 491], [9, 418], [8, 295], [7, 206], [7, 77], [83, 9], [409, 7],
+            [282, 6], [163, 5],
+          ],
+          [
+            [78, 21], [255, 25], [10, 140], [189, 161], [242, 60], [226, 88], [218, 113], [209, 137],
+            [163, 157], [129, 153], [96, 149], [57, 143], [36, 121], [47, 100], [57, 78], [69, 55], [101, 25],
+            [211, 32], [162, 36], [125, 31],
+          ],
+        )
 
-        // Distort img data
-        const oriPoints = [
-          [3, 4], [497, 4], [5, 496], [495, 495], [493, 26], [488, 136], [485, 282], [494, 436], [409, 489],
-          [284, 490], [168, 490], [68, 491], [9, 418], [8, 295], [7, 206], [7, 77], [83, 9], [409, 7],
-          [282, 6], [163, 5],
-        ]
+        const insertion2 = new Insertion(
+          addedImgData,
+          ogImage,
+          [
+            [4, 5], [133, 5], [261, 5], [395, 6], [495, 8], [496, 122],
+            [494, 243], [492, 383], [499, 496], [394, 497], [271, 495], [134, 494],
+            [7, 495], [6, 258], [6, 399], [4, 130],
+          ],
+          [
+            [315, 45], [375, 53], [433, 65], [464, 70], [500, 70], [498, 123], [497, 174],
+            [488, 196], [473, 215], [383, 200], [333, 194], [293, 187], [254, 183],
+            [292, 104], [279, 155], [300, 73],
+          ]
+        )
 
-        const dstPoints = [
-          [78, 21], [255, 25], [10, 140], [189, 161], [242, 60], [226, 88], [218, 113], [209, 137],
-          [163, 157], [129, 153], [96, 149], [57, 143], [36, 121], [47, 100], [57, 78], [69, 55], [101, 25],
-          [211, 32], [162, 36], [125, 31],
-        ]
 
-        const distortedImgData = distortImgData(hiddenCanvasImgData, oriPoints, dstPoints);
-        const combiner = new Combiner(workingCanvas, ogImage);
-        const combinedImageData = combiner.combineImages(templateCanvasImgData, distortedImgData)
+        const combinedImageData = combineWithDistortion(templateCanvasImgData, [insertion1, insertion2]);
 
         showingCanvas.getContext("2d").putImageData(combinedImageData, 0, 0);
       };
 
-      function distortImgData(imgData, oriPoints, dstPoints) {
-        const warper = new Warper(showingCanvas, ogImage, imgData) //, imgData);
+      function combineWithDistortion(template, insertions) {
+        let output = template;
+        for (const insertion of insertions) {
+          const combiner = new Combiner(workingCanvas, insertion.image);
+          const distortedImgData = distortImgData(insertion);
+          output = combiner.combineImages(output, distortedImgData);
+        }
+        return output;
+      }
 
-        return warper.warp(oriPoints.map(p => new Point(...p)), dstPoints.map(p => new Point(...p)))
-        // return imgData;
+      function distortImgData(insertion) {
+        const warper = new Warper(showingCanvas, insertion.image, insertion.imageData);
+        return warper.warp(insertion.oriPoints.map(p => new Point(...p)), insertion.dstPoints.map(p => new Point(...p)));
+      }
+
+      function getImgData(image, canvas) {
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(image, 0, 0, image.width, image.height, 0, 0, canvas.width, canvas.height);
+        return ctx.getImageData(0, 0, image.width, image.height)
       }
     </script>
   </body>
